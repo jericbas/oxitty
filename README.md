@@ -42,7 +42,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/oxitty-term/oxitty.git
+git clone https://github.com/jericbas/oxitty.git
 cd oxitty
 
 # Install frontend dependencies and build assets
