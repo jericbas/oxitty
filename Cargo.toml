@@ -1,17 +1,17 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/oxyd-protocol",
-    "crates/oxyd-core",
-    "crates/oxyd-server",
+    "crates/oxitty-protocol",
+    "crates/oxitty-core",
+    "crates/oxitty-server",
 ]
 
 [workspace.package]
 version = "0.1.0"
 edition = "2021"
-authors = ["Oxyd Contributors"]
+authors = ["Oxitty Contributors"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/oxyd-term/oxyd"
+repository = "https://github.com/oxitty-term/oxitty"
 
 [workspace.dependencies]
 tokio = { version = "1.43", features = ["full"] }

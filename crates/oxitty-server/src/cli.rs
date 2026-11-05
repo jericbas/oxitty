@@ -3,7 +3,7 @@ use std::net::IpAddr;
 
 #[derive(Parser, Debug, Clone)]
 #[command(
-    name = "oxyd",
+    name = "oxitty",
     about = "High-performance Web TTY Daemon built in Rust & React 19",
     version
 )]
@@ -25,7 +25,7 @@ pub struct CliArgs {
     pub args: Vec<String>,
 
     /// Window title
-    #[arg(short = 't', long, default_value = "Oxyd Terminal")]
+    #[arg(short = 't', long, default_value = "Oxitty Terminal")]
     pub title: String,
 
     /// Run in read-only mode (clients cannot send stdin)

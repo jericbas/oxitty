@@ -1,18 +1,18 @@
 {
-  "name": "oxyd-workspace",
+  "name": "oxitty-workspace",
   "version": "0.1.0",
   "private": true,
   "description": "High-performance Web TTY daemon built with Rust, React 19, Bun, Vite & ts-rs",
   "scripts": {
-    "dev": "bun --filter oxyd-frontend dev",
-    "build:frontend": "bun --filter oxyd-frontend build",
+    "dev": "bun --filter oxitty-frontend dev",
+    "build:frontend": "bun --filter oxitty-frontend build",
     "build:backend": "cargo build --release",
     "build": "bun run build:frontend && bun run build:backend",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
     "check:lines": "bun ./scripts/check-line-limits.ts",
     "check": "bun run lint && bun run check:lines",
-    "gen:types": "cargo test -p oxyd-protocol generate_typescript_bindings"
+    "gen:types": "cargo test -p oxitty-protocol generate_typescript_bindings"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

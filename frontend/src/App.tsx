@@ -9,7 +9,7 @@ import type { ServerMessage } from './types/generated';
 import type { TerminalPreferences } from './types/theme';
 
 export function App() {
-  const [title, setTitle] = useState('oxyd');
+  const [title, setTitle] = useState('oxitty');
   const [readOnly, setReadOnly] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [preferences, setPreferences] = useState<TerminalPreferences>({
@@ -36,7 +36,7 @@ export function App() {
         break;
       case 'SetTitle':
         setTitle(msg.payload);
-        document.title = `${msg.payload} - oxyd`;
+        document.title = `${msg.payload} - oxitty`;
         break;
       case 'ProcessExited':
         write(`\r\n\x1b[33m[Process exited with code ${msg.payload ?? 'none'}]\x1b[0m\r\n`);

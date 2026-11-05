@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({ title, status, onOpenSettings, o
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 font-mono font-semibold tracking-wide text-sky-400">
           <Terminal className="w-5 h-5 text-sky-400" />
-          <span>oxyd</span>
+          <span>oxitty</span>
         </div>
         <span className="text-slate-600">/</span>
         <span className="text-xs font-mono text-slate-300 max-w-xs truncate">{title}</span>

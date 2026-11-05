@@ -16,14 +16,14 @@ async fn main() -> anyhow::Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "oxyd=info,tower_http=info".into()),
+                .unwrap_or_else(|_| "oxitty=info,tower_http=info".into()),
         )
         .init();
 
     let cli = CliArgs::parse();
     let addr = SocketAddr::new(cli.interface, cli.port);
 
-    tracing::info!("Starting Oxyd on http://{}", addr);
+    tracing::info!("Starting Oxitty on http://{}", addr);
     tracing::info!("Spawning shell: {}", cli.resolved_command());
 
     let state = AppState {

@@ -1,12 +1,12 @@
-# 🏗️ Oxyd Architecture & Technical Specification
+# 🏗️ Oxitty Architecture & Technical Specification
 
-Oxyd re-engineers terminal web-sharing from first principles using modern systems programming (Rust, Tokio, Axum) and reactive web engineering (React 19, Bun, Vite, Biome).
+Oxitty re-engineers terminal web-sharing from first principles using modern systems programming (Rust, Tokio, Axum) and reactive web engineering (React 19, Bun, Vite, Biome).
 
 ---
 
-## 📊 Comparison: `ttyd` vs `oxyd`
+## 📊 Comparison: `ttyd` vs `oxitty`
 
-| Architectural Vector | `ttyd` (tsl0922/ttyd) | `oxyd` (Rust Reimagined) |
+| Architectural Vector | `ttyd` (tsl0922/ttyd) | `oxitty` (Rust Reimagined) |
 |---|---|---|
 | **Core Language** | C (libwebsockets, libuv, posix_openpt) | Rust (Axum, Tokio, portable-pty) |
 | **Memory Safety** | Manual pointer/buffer handling | Guaranteed by Rust borrow checker |
@@ -37,7 +37,7 @@ Oxyd re-engineers terminal web-sharing from first principles using modern system
                                | WebGL Render        | JSON / WS
                                v                     v
                  +---------------------------------------------+
-                 |            Oxyd Daemon (Rust)               |
+                 |            Oxitty Daemon (Rust)             |
                  |                                             |
                  |   +-------------------------------------+   |
                  |   |     Axum Router & Static Embed      |   |
@@ -51,10 +51,10 @@ Oxyd re-engineers terminal web-sharing from first principles using modern system
                  |                 +-----------------+         |
                  |                 |                           |
                  |                 v                           |
-                 |        +------------------+                 |
-                 |        |  oxyd-core PTY   |                 |
-                 |        |  (Master / Slave)|                 |
-                 |        +------------------+                 |
+                 |        +-------------------+                |
+                 |        |  oxitty-core PTY  |                |
+                 |        |  (Master / Slave) |                |
+                 |        +-------------------+                |
                  |                 |                           |
                  |                 v                           |
                  |        Spawned Process                      |
@@ -69,15 +69,15 @@ Oxyd re-engineers terminal web-sharing from first principles using modern system
 The repository is organized as a clean dual workspace:
 
 ```
-oxyd/
+oxitty/
 ├── crates/
-│   ├── oxyd-protocol/      # Single Source of Truth: Data models with ts-rs
+│   ├── oxitty-protocol/    # Single Source of Truth: Data models with ts-rs
 │   │   └── src/lib.rs      # ClientMessage, ServerMessage, ClientConfig, ResizePayload
-│   ├── oxyd-core/          # PTY Process orchestration & session management
+│   ├── oxitty-core/        # PTY Process orchestration & session management
 │   │   ├── src/lib.rs
 │   │   ├── src/pty.rs      # portable-pty integration & resize handling
 │   │   └── src/session.rs  # Arc/Mutex channel bridge between Tokio & PTY threads
-│   └── oxyd-server/        # Axum HTTP/WS server & CLI application
+│   └── oxitty-server/      # Axum HTTP/WS server & CLI application
 │       ├── src/main.rs     # Entry point & tracing init
 │       ├── src/cli.rs      # Clap argument definition
 │       ├── src/assets.rs   # rust-embed fallback router
@@ -128,7 +128,7 @@ type ClientMessage =
 
 ## 🧵 Concurrency & PTY I/O Model
 
-PTY read operations are fundamentally blocking system calls (`read(2)` on Unix master descriptor). Oxyd bridges this cleanly into Tokio's asynchronous event loop:
+PTY read operations are fundamentally blocking system calls (`read(2)` on Unix master descriptor). Oxitty bridges this cleanly into Tokio's asynchronous event loop:
 
 1. **Reader Task**: `tokio::task::spawn_blocking` executes a dedicated loop reading master descriptor chunks into a bounded `mpsc::channel(128)`.
 2. **WebSocket Bridge**: Axum WebSocket task selects across incoming channel packets and WebSocket client frames.

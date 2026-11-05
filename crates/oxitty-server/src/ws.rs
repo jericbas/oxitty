@@ -6,8 +6,8 @@ use axum::{
     response::IntoResponse,
 };
 use futures::{SinkExt, StreamExt};
-use oxyd_core::Session;
-use oxyd_protocol::{ClientConfig, ClientMessage, ServerMessage};
+use oxitty_core::Session;
+use oxitty_protocol::{ClientConfig, ClientMessage, ServerMessage};
 use std::sync::Arc;
 use crate::cli::CliArgs;
 

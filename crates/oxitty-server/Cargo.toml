@@ -1,16 +1,16 @@
 [package]
-name = "oxyd-server"
+name = "oxitty-server"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [[bin]]
-name = "oxyd"
+name = "oxitty"
 path = "src/main.rs"
 
 [dependencies]
-oxyd-protocol = { path = "../oxyd-protocol" }
-oxyd-core = { path = "../oxyd-core" }
+oxitty-protocol = { path = "../oxitty-protocol" }
+oxitty-core = { path = "../oxitty-core" }
 axum.workspace = true
 tokio.workspace = true
 tower.workspace = true

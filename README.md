@@ -1,4 +1,4 @@
-# 🦀 Oxyd (`oxyd`)
+# 🐱🦀 Oxitty (`oxitty`)
 
 > **Next-Generation Web Terminal Daemon**  
 > Reimagining [`ttyd`](https://github.com/tsl0922/ttyd) with **Rust**, **React 19**, **Bun**, **Vite**, and **`ts-rs`**.
@@ -12,14 +12,15 @@
 
 ---
 
-## 💡 Repository Name Candidates
+## 💡 About the Name: `oxitty`
 
-For this project, we evaluated names combining terminal sharing with the speed and reliability of Rust:
+**`oxitty`** is a portmanteau of **"Oxidized"** (Rust) and **"TTY"** (Teletypewriter). In modern terminal emulator culture, the greatest tools follow the iconic `-ty`/`-tty` lineage:
+- `alacritty` (fastest OpenGL terminal)
+- `kitty` (GPU-accelerated terminal)
+- `ghostty` (modern cross-platform terminal)
+- `ttyd` (classic web terminal daemon)
 
-1. **`oxyd`** ⭐ *(Recommended)*: A sleek, memorable portmanteau of **"Oxidized"** (Rust) and **`ttyd`** ("TTY Daemon"). Short, punchy, and instantly recognizable.
-2. **`iron-tty`**: Industrial and sturdy, referencing Rust's elemental roots and UNIX TTY heritage.
-3. **`termrust`**: Straightforward, descriptive, and SEO-friendly for developer discovery.
-4. **`ferroterm`**: Latin root *ferrum* (Fe) meets terminal sharing.
+👉 **`oxitty`** brings that heritage together: an oxidized terminal daemon sharing your command line across the web with modern React 19 responsiveness and Rust memory safety. It is 100% unregistered and available on **crates.io**.
 
 ---
 
@@ -41,8 +42,8 @@ For this project, we evaluated names combining terminal sharing with the speed a
 
 ```bash
 # Clone the repository
-git clone https://github.com/oxyd-term/oxyd.git
-cd oxyd
+git clone https://github.com/oxitty-term/oxitty.git
+cd oxitty
 
 # Install frontend dependencies and build assets
 bun install
@@ -51,8 +52,8 @@ bun run build:frontend
 # Build the release Rust binary
 cargo build --release
 
-# Run oxyd (defaults to port 7681 and your current shell)
-./target/release/oxyd
+# Run oxitty (defaults to port 7681 and your current shell)
+./target/release/oxitty
 ```
 
 Open your browser at **`http://localhost:7681`**.
@@ -65,7 +66,7 @@ During development, enjoy sub-second Vite HMR for React alongside the Rust daemo
 
 ```bash
 # Terminal 1: Start the Rust backend daemon
-cargo run -p oxyd-server -- --port 7681
+cargo run -p oxitty-server -- --port 7681
 
 # Terminal 2: Start the Vite + Bun dev server (proxies /ws to 7681)
 bun run dev
@@ -80,7 +81,7 @@ Visit **`http://localhost:3000`** with instant React 19 Hot Module Replacement.
 ```
 High-performance Web TTY Daemon built in Rust & React 19
 
-Usage: oxyd [OPTIONS] [ARGS]...
+Usage: oxitty [OPTIONS] [ARGS]...
 
 Arguments:
   [ARGS]...  Command arguments
@@ -89,7 +90,7 @@ Options:
   -p, --port <PORT>            Port to listen on [default: 7681]
   -i, --interface <INTERFACE>  Interface to bind to [default: 0.0.0.0]
   -c, --command <COMMAND>      Command to spawn (defaults to user's $SHELL)
-  -t, --title <TITLE>          Window title [default: "Oxyd Terminal"]
+  -t, --title <TITLE>          Window title [default: "Oxitty Terminal"]
   -R, --readonly               Run in read-only mode (clients cannot send stdin)
   -s, --shared                 Allow multiple clients to attach to the same session
   -h, --help                   Print help
@@ -100,13 +101,13 @@ Options:
 
 ```bash
 # Launch htop over the web in read-only mode
-oxyd -c htop -R
+oxitty -c htop -R
 
 # Run a custom bash session on port 8080
-oxyd -p 8080 -c /bin/bash
+oxitty -p 8080 -c /bin/bash
 
 # Run custom command with parameters
-oxyd -t "System Log" -- journalctl -f
+oxitty -t "System Log" -- journalctl -f
 ```
 
 ---
@@ -114,11 +115,11 @@ oxyd -t "System Log" -- journalctl -f
 ## 📁 Repository Structure
 
 ```
-oxyd/
+oxitty/
 ├── crates/
-│   ├── oxyd-protocol/       # Data models + ts-rs TypeScript export tests
-│   ├── oxyd-core/           # PTY process orchestration & session bridge
-│   └── oxyd-server/         # Axum HTTP/WS server, CLI & embedded assets
+│   ├── oxitty-protocol/     # Data models + ts-rs TypeScript export tests
+│   ├── oxitty-core/         # PTY process orchestration & session bridge
+│   └── oxitty-server/       # Axum HTTP/WS server, CLI & embedded assets
 ├── frontend/                # React 19 + Bun + Vite frontend
 │   ├── src/
 │   │   ├── types/generated/ # Auto-generated TypeScript definitions
