@@ -60,7 +60,24 @@ Open your browser at **`http://localhost:7681`**.
 
 ---
 
-### 2. Development Workflow (Hot Reloading)
+### 2. Run with Docker (Containerized)
+
+You can run Oxitty in an isolated container without installing Rust or Bun locally:
+
+```bash
+# Using Docker Compose:
+docker compose up -d
+
+# Or build and run directly:
+docker build -t oxitty .
+docker run -it --rm -p 7681:7681 oxitty
+```
+
+Access your containerized terminal at **`http://localhost:7681`**.
+
+---
+
+### 3. Development Workflow (Hot Reloading)
 
 During development, enjoy sub-second Vite HMR for React alongside the Rust daemon:
 

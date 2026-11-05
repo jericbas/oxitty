@@ -1,0 +1,15 @@
+services:
+  oxitty:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: oxitty:latest
+    container_name: oxitty-daemon
+    ports:
+      - "7681:7681"
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    environment:
+      - TERM=xterm-256color
+      - COLORTERM=truecolor
