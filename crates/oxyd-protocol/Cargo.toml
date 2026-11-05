@@ -1,0 +1,13 @@
+[package]
+name = "oxyd-protocol"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+ts-rs.workspace = true
+
+[dev-dependencies]
+tokio.workspace = true
