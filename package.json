@@ -1,6 +1,6 @@
 {
   "name": "oxitty-workspace",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "license": "MIT OR Apache-2.0",
   "author": "Jeric Bas <jeric.codes@proton.me>",
@@ -23,5 +23,7 @@
     "@biomejs/biome": "^1.9.4",
     "tsrs": "^0.22.0-ts7.1.0-beta"
   },
-  "workspaces": ["frontend"]
+  "workspaces": [
+    "frontend"
+  ]
 }
