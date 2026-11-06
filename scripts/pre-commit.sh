@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export PATH="$HOME/.cargo/bin:$HOME/.bun/bin:$PATH"
+
 # Collect staged files (Added, Copied, Modified, Renamed)
 STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
 
