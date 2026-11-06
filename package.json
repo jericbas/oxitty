@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "bun --filter oxitty-frontend dev",
     "typecheck": "bun --filter oxitty-frontend typecheck",
-    "build:frontend": "bun --filter oxitty-frontend build && mkdir -p crates/oxitty/dist && cp -r frontend/dist/* crates/oxitty/dist/",
+    "build:frontend": "bun --filter oxitty-frontend build && rm -rf crates/oxitty/dist && mkdir -p crates/oxitty/dist && cp -r frontend/dist/* crates/oxitty/dist/",
     "build:backend": "cargo build --release",
     "build": "bun run build:frontend && bun run build:backend",
     "lint": "biome check .",

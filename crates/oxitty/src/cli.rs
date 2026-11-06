@@ -34,6 +34,10 @@ pub struct CliArgs {
     #[arg(short = 't', long)]
     pub title: Option<String>,
 
+    /// Terminal color theme preset (e.g. tokyo-night, catppuccin, dracula, gruvbox, nord, one-dark)
+    #[arg(long, env = "OXITTY_THEME")]
+    pub theme: Option<String>,
+
     /// Run in read-only mode (clients cannot send stdin)
     #[arg(short = 'R', long)]
     pub readonly: bool,
@@ -73,6 +77,9 @@ impl CliArgs {
         }
         if self.title.is_none() {
             self.title = config.server.title.clone();
+        }
+        if self.theme.is_none() {
+            self.theme = config.theme.preset.clone();
         }
         if !self.readonly {
             self.readonly = config.server.readonly.unwrap_or(false);

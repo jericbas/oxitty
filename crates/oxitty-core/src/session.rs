@@ -2,13 +2,21 @@ use crate::pty::{spawn_pty, PtyError, PtyWriter};
 use crate::ring_buffer::RingBuffer;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex as StdMutex};
-use tokio::sync::{broadcast, Mutex};
+use tokio::sync::{broadcast, watch, Mutex};
 use uuid::Uuid;
+
+pub type ExitState = Option<Option<i32>>;
+pub type SessionSubscription = (
+    broadcast::Receiver<Vec<u8>>,
+    watch::Receiver<ExitState>,
+    Vec<u8>,
+);
 
 pub struct Session {
     pub id: String,
     writer: Arc<Mutex<PtyWriter>>,
     tx: broadcast::Sender<Vec<u8>>,
+    exit_rx: watch::Receiver<Option<Option<i32>>>,
     ring_buffer: Arc<StdMutex<RingBuffer>>,
     client_sizes: Arc<Mutex<HashMap<String, (u16, u16)>>>,
 }
@@ -16,8 +24,9 @@ pub struct Session {
 impl Session {
     pub fn new(command: &str, args: &[String], cols: u16, rows: u16) -> Result<Self, PtyError> {
         let id = Uuid::new_v4().to_string();
-        let (writer, mut reader) = spawn_pty(command, args, cols, rows)?;
+        let (writer, mut reader, mut child) = spawn_pty(command, args, cols, rows)?;
         let (broadcast_tx, _) = broadcast::channel::<Vec<u8>>(512);
+        let (exit_tx, exit_rx) = watch::channel::<Option<Option<i32>>>(None);
         let ring_buffer = Arc::new(StdMutex::new(RingBuffer::new(128 * 1024)));
 
         let tx_clone = broadcast_tx.clone();
@@ -39,30 +48,38 @@ impl Session {
                         let _ = tx_clone.send(chunk.to_vec());
                     }
                     Err(e) => {
-                        tracing::error!("Error reading PTY: {}", e);
+                        tracing::debug!("PTY stream ended: {}", e);
                         break;
                     }
                 }
             }
+            let exit_code = child.wait().ok().map(|status| status.exit_code() as i32);
+            let _ = exit_tx.send(Some(exit_code));
         });
 
         Ok(Self {
             id,
             writer: Arc::new(Mutex::new(writer)),
             tx: broadcast_tx,
+            exit_rx,
             ring_buffer,
             client_sizes: Arc::new(Mutex::new(HashMap::new())),
         })
     }
 
-    pub fn subscribe(&self) -> (broadcast::Receiver<Vec<u8>>, Vec<u8>) {
+    pub fn is_alive(&self) -> bool {
+        self.exit_rx.borrow().is_none()
+    }
+
+    pub fn subscribe(&self) -> SessionSubscription {
         let rx = self.tx.subscribe();
+        let exit_rx = self.exit_rx.clone();
         let snapshot = self
             .ring_buffer
             .lock()
             .map(|rb| rb.snapshot())
             .unwrap_or_default();
-        (rx, snapshot)
+        (rx, exit_rx, snapshot)
     }
 
     pub async fn write_input(&self, data: &[u8]) -> Result<(), PtyError> {

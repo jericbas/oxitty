@@ -51,6 +51,7 @@ Options:
   -i, --interface <INTERFACE>  Interface to bind to [default: 0.0.0.0]
   -c, --command <COMMAND>      Command to spawn (defaults to user's $SHELL)
   -t, --title <TITLE>          Terminal window title [default: "Oxitty Terminal"]
+      --theme <THEME>          Terminal color theme preset [env: OXITTY_THEME]
   -R, --readonly               Run in read-only mode (clients cannot send stdin)
   -s, --shared                 Allow multiple clients to attach to the same session
   -u, --credential <USER:PASS> Basic HTTP authentication credentials (format: username:password)
@@ -91,8 +92,10 @@ font_size = 14
 cursor_blink = true
 
 [theme]
-# Theme presets: oneDark, dracula, nord, catppuccin
-preset = "oneDark"
+# 14 built-in presets:
+# tokyo-night, catppuccin, catppuccin-latte, one-dark, dracula, gruvbox,
+# nord, rose-pine, kanagawa, everforest, ayu-dark, solarized-dark, github-dark, monokai
+preset = "tokyo-night"
 
 [theme.colors]
 # Custom ANSI 16-color & truecolor palette override
@@ -123,11 +126,13 @@ Oxitty provides collaborative terminal streaming:
 
 ## Multi-Tab & Split-Pane Workspace
 
-Oxitty features a modern multi-tab, split-pane workspace powered by React 19 concurrent transitions:
+Oxitty features a modern multi-tab, resizable split-pane workspace:
 - `Ctrl+Shift+T`: Open a new independent terminal tab.
-- `Ctrl+Shift+W`: Close the active tab or pane.
-- `Ctrl+Shift+H`: Split the current tab horizontally.
-- `Ctrl+Shift+V`: Split the current tab vertically.
+- `Ctrl+Shift+W`: Close the active split pane or tab.
+- `Alt+Shift+H`: Split the current tab horizontally (top/bottom).
+- `Alt+Shift+V`: Split the current tab vertically (left/right).
+- `Ctrl+Shift+C` / `Ctrl+Shift+V`: Copy selection / Paste from clipboard.
+- `Ctrl+=` / `Ctrl+-` / `Ctrl+0`: Zoom font size in, out, or reset.
 
 ---
 
