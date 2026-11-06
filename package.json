@@ -13,7 +13,9 @@
     "lint:fix": "biome check --write .",
     "check:lines": "bun ./scripts/check-line-limits.ts",
     "check": "bun run lint && bun run check:lines",
-    "gen:types": "cargo test -p oxitty-protocol generate_typescript_bindings"
+    "gen:types": "cargo test -p oxitty-protocol generate_typescript_bindings",
+    "prepare": "git config core.hooksPath .githooks || true",
+    "precommit": "./scripts/pre-commit.sh"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
