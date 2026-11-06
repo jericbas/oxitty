@@ -176,14 +176,14 @@ jobs:
         if: ${{ env.CARGO_REGISTRY_TOKEN != '' }}
         run: |
           echo "Publishing oxitty-protocol..."
-          cargo publish -p oxitty-protocol --token "$CARGO_REGISTRY_TOKEN" || echo "oxitty-protocol may already be published"
+          cargo publish -p oxitty-protocol --allow-dirty --token "$CARGO_REGISTRY_TOKEN" || echo "oxitty-protocol may already be published"
           sleep 25
 
           echo "Publishing oxitty-core..."
-          cargo publish -p oxitty-core --token "$CARGO_REGISTRY_TOKEN" || echo "oxitty-core may already be published"
+          cargo publish -p oxitty-core --allow-dirty --token "$CARGO_REGISTRY_TOKEN" || echo "oxitty-core may already be published"
           sleep 25
 
           echo "Publishing oxitty..."
-          cargo publish -p oxitty --token "$CARGO_REGISTRY_TOKEN"
+          cargo publish -p oxitty --allow-dirty --token "$CARGO_REGISTRY_TOKEN"
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

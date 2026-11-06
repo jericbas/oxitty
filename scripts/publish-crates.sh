@@ -12,18 +12,18 @@ bun install
 bun run build:frontend
 
 echo "==> Publishing oxitty-protocol v0.0.0..."
-cargo publish -p oxitty-protocol --token "$CARGO_REGISTRY_TOKEN" || true
+cargo publish -p oxitty-protocol --allow-dirty --token "$CARGO_REGISTRY_TOKEN" || true
 
 echo "==> Waiting 30s for crates.io index propagation..."
 sleep 30
 
 echo "==> Publishing oxitty-core v0.0.0..."
-cargo publish -p oxitty-core --token "$CARGO_REGISTRY_TOKEN" || true
+cargo publish -p oxitty-core --allow-dirty --token "$CARGO_REGISTRY_TOKEN" || true
 
 echo "==> Waiting 30s for crates.io index propagation..."
 sleep 30
 
 echo "==> Publishing oxitty v0.0.0..."
-cargo publish -p oxitty --token "$CARGO_REGISTRY_TOKEN"
+cargo publish -p oxitty --allow-dirty --token "$CARGO_REGISTRY_TOKEN"
 
 echo "==> Successfully claimed and published oxitty to crates.io!"

@@ -37,7 +37,7 @@ jobs:
       - name: Publish oxitty-protocol
         run: |
           echo "Packaging and publishing oxitty-protocol..."
-          cargo publish -p oxitty-protocol --token "$CARGO_REGISTRY_TOKEN" || echo "oxitty-protocol published or failed softly"
+          cargo publish -p oxitty-protocol --allow-dirty --token "$CARGO_REGISTRY_TOKEN" || echo "oxitty-protocol published or failed softly"
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
@@ -49,7 +49,7 @@ jobs:
       - name: Publish oxitty-core
         run: |
           echo "Packaging and publishing oxitty-core..."
-          cargo publish -p oxitty-core --token "$CARGO_REGISTRY_TOKEN" || echo "oxitty-core published or failed softly"
+          cargo publish -p oxitty-core --allow-dirty --token "$CARGO_REGISTRY_TOKEN" || echo "oxitty-core published or failed softly"
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
@@ -61,6 +61,6 @@ jobs:
       - name: Publish oxitty
         run: |
           echo "Packaging and publishing oxitty..."
-          cargo publish -p oxitty --token "$CARGO_REGISTRY_TOKEN"
+          cargo publish -p oxitty --allow-dirty --token "$CARGO_REGISTRY_TOKEN"
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
