@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/jericbas/oxitty/compare/v1.0.0...v1.0.1) (2026-11-06)
+
+
+### Bug Fixes
+
+* **ci:** update workspace dependency versions to 1.0.0 and format package.json ([f6a7279](https://github.com/jericbas/oxitty/commit/f6a72795b017437d6dd938c1212c9ae2d5280a14))
+
 ## 1.0.0 (2026-11-06)
 
 

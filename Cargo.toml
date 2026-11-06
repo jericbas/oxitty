@@ -7,7 +7,7 @@ members = [
 ]
 
 [workspace.package]
-version = "1.0.0"
+version = "1.0.1"
 edition = "2021"
 authors = ["Jeric Bas <jeric.codes@proton.me>"]
 license = "MIT OR Apache-2.0"
@@ -17,8 +17,8 @@ description = "High-performance Web TTY daemon built with Rust, React 19, Bun, V
 readme = "README.md"
 
 [workspace.dependencies]
-oxitty-protocol = { version = "1.0.0", path = "crates/oxitty-protocol" }
-oxitty-core = { version = "1.0.0", path = "crates/oxitty-core" }
+oxitty-protocol = { version = "1.0.1", path = "crates/oxitty-protocol" }
+oxitty-core = { version = "1.0.1", path = "crates/oxitty-core" }
 tokio = { version = "1.43", features = ["full"] }
 tokio-util = { version = "0.7", features = ["codec"] }
 axum = { version = "0.8", features = ["ws"] }
