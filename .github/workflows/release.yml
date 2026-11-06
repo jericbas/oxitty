@@ -177,8 +177,11 @@ jobs:
           bun run build:frontend
 
       - name: Publish to Crates.io
-        if: ${{ env.CARGO_REGISTRY_TOKEN != '' }}
         run: |
+          if [ -z "$CARGO_REGISTRY_TOKEN" ]; then
+            echo "CARGO_REGISTRY_TOKEN is not set, skipping Crates.io publishing."
+            exit 0
+          fi
           echo "Publishing oxitty-protocol..."
           cargo publish -p oxitty-protocol --allow-dirty --token "$CARGO_REGISTRY_TOKEN" || echo "oxitty-protocol may already be published"
           sleep 25
