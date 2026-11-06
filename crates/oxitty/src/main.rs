@@ -1,6 +1,7 @@
 mod assets;
 mod auth;
 mod cli;
+mod config;
 mod ws;
 
 use assets::static_handler;
@@ -8,6 +9,8 @@ use auth::basic_auth_middleware;
 use axum::{middleware, routing::get, Router};
 use clap::Parser;
 use cli::CliArgs;
+use config::OxittyConfig;
+use oxitty_core::SessionManager;
 use std::{net::SocketAddr, sync::Arc};
 use tower_http::cors::CorsLayer;
 use tower_http::trace::TraceLayer;
@@ -22,10 +25,18 @@ async fn main() -> anyhow::Result<()> {
         )
         .init();
 
-    let cli = CliArgs::parse();
-    let addr = SocketAddr::new(cli.interface, cli.port);
+    let mut cli = CliArgs::parse();
+    let config = OxittyConfig::load(cli.config.as_deref());
+    cli.merge_with_config(&config);
 
-    let state = AppState { cli: Arc::new(cli) };
+    let addr = SocketAddr::new(cli.interface(), cli.port());
+    let sessions = SessionManager::new();
+
+    let state = AppState {
+        cli: Arc::new(cli),
+        config: Arc::new(config),
+        sessions,
+    };
 
     let app = Router::new()
         .route("/ws", get(ws_handler))

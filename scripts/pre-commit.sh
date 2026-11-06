@@ -46,7 +46,7 @@ done <<< "$STAGED_FILES"
 
 if [ ${#RS_FILES[@]} -gt 0 ]; then
   echo "==> Checking Rust formatting on ${#RS_FILES[@]} file(s)..."
-  rustfmt --check "${RS_FILES[@]}"
+  rustfmt --edition 2021 --check "${RS_FILES[@]}"
 fi
 
 echo "✨ Pre-commit checks passed!"

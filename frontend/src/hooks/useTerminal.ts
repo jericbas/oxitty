@@ -3,7 +3,7 @@ import { WebglAddon } from '@xterm/addon-webgl';
 import { Terminal } from '@xterm/xterm';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ResizePayload } from '../types/generated';
-import { TERMINAL_THEMES, type TerminalPreferences } from '../types/theme';
+import { type TerminalPreferences, resolveTheme } from '../types/theme';
 
 interface UseTerminalOptions {
   preferences: TerminalPreferences;
@@ -46,7 +46,7 @@ export function useTerminal({ preferences, onInput, onResize }: UseTerminalOptio
       cursorBlink: preferences.cursorBlink,
       fontFamily: preferences.fontFamily,
       fontSize: preferences.fontSize,
-      theme: TERMINAL_THEMES[preferences.themeName],
+      theme: resolveTheme(preferences.themeName, preferences.customColors),
       allowProposedApi: true,
     });
 

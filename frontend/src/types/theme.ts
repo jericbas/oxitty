@@ -1,10 +1,12 @@
 import type { ITheme } from '@xterm/xterm';
+import type { CustomColors } from './generated';
 
 export interface TerminalPreferences {
   fontSize: number;
   fontFamily: string;
   cursorBlink: boolean;
   themeName: 'dracula' | 'nord' | 'oneDark' | 'catppuccin';
+  customColors?: CustomColors;
 }
 
 export const TERMINAL_THEMES: Record<TerminalPreferences['themeName'], ITheme> = {
@@ -66,3 +68,17 @@ export const TERMINAL_THEMES: Record<TerminalPreferences['themeName'], ITheme> =
     white: '#bac2de',
   },
 };
+
+export function resolveTheme(
+  themeName: TerminalPreferences['themeName'],
+  customColors?: CustomColors
+): ITheme {
+  const base = { ...TERMINAL_THEMES[themeName] };
+  if (!customColors) return base;
+  for (const [key, val] of Object.entries(customColors)) {
+    if (val) {
+      (base as Record<string, string>)[key] = val;
+    }
+  }
+  return base;
+}

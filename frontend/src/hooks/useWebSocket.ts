@@ -5,11 +5,19 @@ export type ConnectionStatus = 'connecting' | 'connected' | 'disconnected' | 'er
 
 interface UseWebSocketOptions {
   url?: string;
+  sessionId?: string;
+  isObserver?: boolean;
   onMessage: (message: ServerMessage) => void;
   autoReconnect?: boolean;
 }
 
-export function useWebSocket({ url, onMessage, autoReconnect = true }: UseWebSocketOptions) {
+export function useWebSocket({
+  url,
+  sessionId,
+  isObserver,
+  onMessage,
+  autoReconnect = true,
+}: UseWebSocketOptions) {
   const [status, setStatus] = useState<ConnectionStatus>('connecting');
   const [latency, setLatency] = useState<number | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
@@ -21,8 +29,12 @@ export function useWebSocket({ url, onMessage, autoReconnect = true }: UseWebSoc
   const getWsUrl = useCallback(() => {
     if (url) return url;
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    return `${protocol}//${window.location.host}/ws`;
-  }, [url]);
+    const params = new URLSearchParams();
+    if (sessionId) params.set('session', sessionId);
+    if (isObserver) params.set('observer', 'true');
+    const qs = params.toString();
+    return `${protocol}//${window.location.host}/ws${qs ? `?${qs}` : ''}`;
+  }, [url, sessionId, isObserver]);
 
   const send = useCallback((message: ClientMessage) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {

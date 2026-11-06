@@ -13,12 +13,6 @@
 
 ---
 
-> [!WARNING]
-> ### 🚧 UNDER CONSTRUCTION 🚧
-> **Oxitty is under active development.** Features, CLI options, and internal APIs may change rapidly. Feedback, issues, and contributions are welcome!
-
----
-
 ## ⚡ Quick Start
 
 ### Install from crates.io
@@ -28,7 +22,17 @@ cargo install oxitty
 oxitty
 ```
 
-### Or Build from Source
+### Or Download Pre-built Binary / Debian Package
+
+Pre-built standalone static binaries (`x86_64` and `aarch64`) and `.deb` packages (with bundled `oxitty.service` systemd unit) are available on [GitHub Releases](https://github.com/jericbas/oxitty/releases).
+
+```bash
+# Install Debian package (.deb)
+sudo dpkg -i oxitty_*.deb
+sudo systemctl enable --now oxitty
+```
+
+### Build from Source
 
 ```bash
 git clone https://github.com/jericbas/oxitty.git
@@ -50,8 +54,10 @@ docker run -it --rm -p 7681:7681 ghcr.io/jericbas/oxitty:latest
 ## ✨ Highlights
 
 - **🚀 Memory-Safe & Async**: Built with Axum, Tokio, and `portable-pty`.
+- **👥 Multi-Client Session Sharing & Observer Mode**: Broadcast terminal sessions across clients (`-s, --shared`), generate instant read-only share links, with automatic PTY buffer replay on join.
+- **🗂️ Multi-Tab & Split-Pane Workspace**: React 19 concurrent transitions for responsive tab switching, vertical/horizontal pane splitting, and keyboard navigation (`Ctrl+Shift+T`, `Ctrl+Shift+H`, `Ctrl+Shift+V`, `Ctrl+Shift+W`).
+- **⚙️ Configuration File (`.oxitty.toml`)**: Persistent configuration loaded from `./.oxitty.toml`, `~/.config/oxitty/oxitty.toml`, or `/etc/oxitty/oxitty.toml` with custom 16-color ANSI palettes and truecolor presets.
 - **🔒 Security Built-In**: Native HTTP Basic Auth (`-u user:pass`) and in-process TLS/SSL (`--ssl-cert`, `--ssl-key`).
-- **⚛️ Modern React 19 UI**: Built with React 19, [`tsrs`](https://github.com/oxc-project/tsrs), and hardware-accelerated WebGL terminal (`@xterm/xterm`).
 - **📦 Single Standalone Binary**: Frontend assets embedded directly via `rust-embed`.
 - **📏 Strict 200-Line Axiom**: Every file is guaranteed <= 200 SLOC.
 
@@ -61,7 +67,7 @@ docker run -it --rm -p 7681:7681 ghcr.io/jericbas/oxitty:latest
 
 For complete guides and references, please see:
 
-- 📖 **[Comprehensive User Guide & CLI Reference](DOCUMENTATION.md)** - Full CLI manual, deployment modes, and security configurations.
+- 📖 **[Comprehensive User Guide & CLI Reference](DOCUMENTATION.md)** - Full CLI manual, deployment modes, config options, and security configurations.
 - 🏗️ **[Architecture & Protocol Specification](ARCHITECTURE.md)** - Deep dive into Tokio event loops, PTY bridging, and WebSocket protocols.
 - 📐 **[Philosophy & 200-Line Axiom](PHILOSOPHY.md)** - Modularity, design principles, and code constraints.
 
