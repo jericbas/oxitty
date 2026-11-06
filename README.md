@@ -3,6 +3,7 @@
 > **Next-Generation Web Terminal Daemon**  
 > Reimagining [`ttyd`](https://github.com/tsl0922/ttyd) with **Rust**, **React 19**, **Bun**, **Vite**, and **`ts-rs`**.
 
+[![Crates.io](https://img.shields.io/crates/v/oxitty.svg)](https://crates.io/crates/oxitty)
 [![Rust](https://img.shields.io/badge/Rust-1.80%2B-orange.svg)](https://www.rust-lang.org/)
 [![React](https://img.shields.io/badge/React-19.0-61dafb.svg)](https://react.dev/)
 [![Bun](https://img.shields.io/badge/Bun-1.4%2B-fbf0df.svg)](https://bun.sh/)
@@ -12,177 +13,60 @@
 
 ---
 
-## 💡 About the Name: `oxitty`
-
-**`oxitty`** is a portmanteau of **"Oxidized"** (Rust) and **"TTY"** (Teletypewriter). In modern terminal emulator culture, the greatest tools follow the iconic `-ty`/`-tty` lineage:
-- `alacritty` (fastest OpenGL terminal)
-- `kitty` (GPU-accelerated terminal)
-- `ghostty` (modern cross-platform terminal)
-- `ttyd` (classic web terminal daemon)
-
-👉 **`oxitty`** brings that heritage together: an oxidized terminal daemon sharing your command line across the web with modern React 19 responsiveness and Rust memory safety. It is 100% unregistered and available on **crates.io**.
+> [!WARNING]
+> ### 🚧 UNDER CONSTRUCTION 🚧
+> **Oxitty is under active development.** Features, CLI options, and internal APIs may change rapidly. Feedback, issues, and contributions are welcome!
 
 ---
 
-## ✨ Features
+## ⚡ Quick Start
 
-- **🚀 Memory-Safe & Asynchronous**: Built with **Axum**, **Tokio**, and **`portable-pty`** for high-throughput, low-latency terminal multiplexing without C memory pitfalls.
-- **⚛️ Modern React 19 UI**: Built with the latest React 19 component architecture, hooks, and clean UI state separation.
-- **🔄 Zero-Drift Type Sharing (`ts-rs`)**: Rust structs automatically compile down to TypeScript definitions for both client and server wire messages.
-- **⚡ Hardware-Accelerated Terminal**: Integrated `@xterm/xterm` with **WebGL** renderer and seamless canvas fallback.
-- **📦 Single-Binary Distribution**: Production React frontend is statically compiled and embedded directly into the Rust executable via `rust-embed`.
-- **🎨 Live Customization**: Switch themes on the fly (Dracula, Nord, One Dark, Catppuccin), adjust font sizes, toggle cursor blinking, and expand fullscreen.
-- **📏 Strict 200-Line Axiom**: Every source file is kept strictly under **200 Source Lines of Code (SLOC)**, enforced by custom verification scripts and Biome linter.
-
----
-
-## 🚀 Quick Start
-
-### 1. Build and Run the Single Standalone Binary
+### Install from crates.io
 
 ```bash
-# Clone the repository
+cargo install oxitty
+oxitty
+```
+
+### Or Build from Source
+
+```bash
 git clone https://github.com/jericbas/oxitty.git
 cd oxitty
-
-# Install frontend dependencies and build assets
-bun install
-bun run build:frontend
-
-# Build the release Rust binary
-cargo build --release
-
-# Run oxitty (defaults to port 7681 and your current shell)
+bun install && bun run build
 ./target/release/oxitty
 ```
 
 Open your browser at **`http://localhost:7681`**.
 
----
-
-### 2. Run with Docker (Containerized)
-
-You can run Oxitty in an isolated container without installing Rust or Bun locally:
+### Run with Docker
 
 ```bash
-# Using Docker Compose:
-docker compose up -d
-
-# Or build and run directly:
-docker build -t oxitty .
-docker run -it --rm -p 7681:7681 oxitty
-```
-
-Access your containerized terminal at **`http://localhost:7681`**.
-
----
-
-### 3. Development Workflow (Hot Reloading)
-
-During development, enjoy sub-second Vite HMR for React alongside the Rust daemon:
-
-```bash
-# Terminal 1: Start the Rust backend daemon
-cargo run -p oxitty -- --port 7681
-
-# Terminal 2: Start the Vite + Bun dev server (proxies /ws to 7681)
-bun run dev
-```
-
-Visit **`http://localhost:3000`** with instant React 19 Hot Module Replacement.
-
----
-
-## 🛠️ CLI Options
-
-```
-High-performance Web TTY Daemon built in Rust & React 19
-
-Usage: oxitty [OPTIONS] [ARGS]...
-
-Arguments:
-  [ARGS]...  Command arguments
-
-Options:
-  -p, --port <PORT>            Port to listen on [default: 7681]
-  -i, --interface <INTERFACE>  Interface to bind to [default: 0.0.0.0]
-  -c, --command <COMMAND>      Command to spawn (defaults to user's $SHELL)
-  -t, --title <TITLE>          Window title [default: "Oxitty Terminal"]
-  -R, --readonly               Run in read-only mode (clients cannot send stdin)
-  -s, --shared                 Allow multiple clients to attach to the same session
-  -h, --help                   Print help
-  -V, --version                Print version
-```
-
-### Examples
-
-```bash
-# Launch htop over the web in read-only mode
-oxitty -c htop -R
-
-# Run a custom bash session on port 8080
-oxitty -p 8080 -c /bin/bash
-
-# Run custom command with parameters
-oxitty -t "System Log" -- journalctl -f
+docker run -it --rm -p 7681:7681 ghcr.io/jericbas/oxitty:latest
 ```
 
 ---
 
-## 📁 Repository Structure
+## ✨ Highlights
 
-```
-oxitty/
-├── crates/
-│   ├── oxitty-protocol/     # Data models + ts-rs TypeScript export tests
-│   ├── oxitty-core/         # PTY process orchestration & session bridge
-│   └── oxitty/              # Axum HTTP/WS server, CLI & embedded assets
-├── frontend/                # React 19 + Bun + Vite frontend
-│   ├── src/
-│   │   ├── types/generated/ # Auto-generated TypeScript definitions
-│   │   ├── hooks/           # useTerminal, useWebSocket
-│   │   ├── components/      # Header, StatusBar, SettingsModal, TerminalView
-│   │   ├── App.tsx          # Main React 19 interface
-│   │   └── main.tsx         # React 19 root
-├── scripts/
-│   └── check-line-limits.ts # Verifies <= 200 SLOC per file
-├── biome.json               # Biome linter & formatter configuration
-├── ARCHITECTURE.md          # In-depth architectural specification & protocol
-└── PHILOSOPHY.md            # Modularity, SLOC rules & core guidelines
-```
+- **🚀 Memory-Safe & Async**: Built with Axum, Tokio, and `portable-pty`.
+- **🔒 Security Built-In**: Native HTTP Basic Auth (`-u user:pass`) and in-process TLS/SSL (`--ssl-cert`, `--ssl-key`).
+- **⚛️ Modern React 19 UI**: Zero-drift type sharing (`ts-rs`) and hardware-accelerated WebGL terminal (`@xterm/xterm`).
+- **📦 Single Standalone Binary**: Frontend assets embedded directly via `rust-embed`.
+- **📏 Strict 200-Line Axiom**: Every file is guaranteed <= 200 SLOC.
 
 ---
 
-## 🧪 Code Quality & Quality Assurance
+## 📚 Documentation
 
-Run the complete test, lint, and modularity verification suite:
+For complete guides and references, please see:
 
-```bash
-# 1. Regenerate TypeScript types from Rust
-bun run gen:types
-
-# 2. Run Biome formatter and linter check
-bun run lint
-
-# 3. Verify strict <= 200 line constraint
-bun run check:lines
-
-# 4. Run all checks together
-bun run check
-```
-
----
-
-## 📜 Documentation
-
-- [Philosophy Guidelines](PHILOSOPHY.md) - Learn about our design principles and the 200-line axiom.
-- [Architecture & Protocol Specification](ARCHITECTURE.md) - Deep dive into Tokio concurrency, PTY bridging, and WebSocket message framing.
+- 📖 **[Comprehensive User Guide & CLI Reference](DOCUMENTATION.md)** - Full CLI manual, deployment modes, and security configurations.
+- 🏗️ **[Architecture & Protocol Specification](ARCHITECTURE.md)** - Deep dive into Tokio event loops, PTY bridging, and WebSocket protocols.
+- 📐 **[Philosophy & 200-Line Axiom](PHILOSOPHY.md)** - Modularity, design principles, and code constraints.
 
 ---
 
 ## 📄 License
 
-Dual-licensed under either of:
-- Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
-- MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
-at your option.
+Dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE).

@@ -1,3 +1,4 @@
+use crate::cli::CliArgs;
 use axum::{
     extract::{
         ws::{Message, WebSocket},
@@ -9,17 +10,13 @@ use futures::{SinkExt, StreamExt};
 use oxitty_core::Session;
 use oxitty_protocol::{ClientConfig, ClientMessage, ServerMessage};
 use std::sync::Arc;
-use crate::cli::CliArgs;
 
 #[derive(Clone)]
 pub struct AppState {
     pub cli: Arc<CliArgs>,
 }
 
-pub async fn ws_handler(
-    ws: WebSocketUpgrade,
-    State(state): State<AppState>,
-) -> impl IntoResponse {
+pub async fn ws_handler(ws: WebSocketUpgrade, State(state): State<AppState>) -> impl IntoResponse {
     ws.on_upgrade(move |socket| handle_socket(socket, state))
 }
 
@@ -74,10 +71,8 @@ async fn handle_socket(socket: WebSocket, state: AppState) {
                     Message::Text(payload) => {
                         if let Ok(client_msg) = serde_json::from_str::<ClientMessage>(&payload) {
                             match client_msg {
-                                ClientMessage::Input(input_data) => {
-                                    if !state.cli.readonly {
-                                        let _ = session.write_input(input_data.as_bytes()).await;
-                                    }
+                                ClientMessage::Input(input_data) if !state.cli.readonly => {
+                                    let _ = session.write_input(input_data.as_bytes()).await;
                                 }
                                 ClientMessage::Resize(resize) => {
                                     let _ = session.resize(resize.cols, resize.rows).await;
