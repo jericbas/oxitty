@@ -83,7 +83,7 @@ During development, enjoy sub-second Vite HMR for React alongside the Rust daemo
 
 ```bash
 # Terminal 1: Start the Rust backend daemon
-cargo run -p oxitty-server -- --port 7681
+cargo run -p oxitty -- --port 7681
 
 # Terminal 2: Start the Vite + Bun dev server (proxies /ws to 7681)
 bun run dev
@@ -136,7 +136,7 @@ oxitty/
 ├── crates/
 │   ├── oxitty-protocol/     # Data models + ts-rs TypeScript export tests
 │   ├── oxitty-core/         # PTY process orchestration & session bridge
-│   └── oxitty-server/       # Axum HTTP/WS server, CLI & embedded assets
+│   └── oxitty/              # Axum HTTP/WS server, CLI & embedded assets
 ├── frontend/                # React 19 + Bun + Vite frontend
 │   ├── src/
 │   │   ├── types/generated/ # Auto-generated TypeScript definitions

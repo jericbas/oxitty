@@ -22,9 +22,9 @@ RUN apk add --no-cache musl-dev
 WORKDIR /app
 COPY Cargo.toml Cargo.lock ./
 COPY crates ./crates
-COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+COPY --from=frontend-builder /app/frontend/dist ./crates/oxitty/dist
 
-RUN cargo build --release -p oxitty-server
+RUN cargo build --release -p oxitty
 
 # -------------------------------------------------------------
 # Stage 3: Minimal Production Container

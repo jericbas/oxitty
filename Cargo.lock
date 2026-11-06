@@ -713,30 +713,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "384b8ab6d37215f3c5301a95a4accb5d64aa607f1fcb26a11b5303878451b4fe"
 
 [[package]]
-name = "oxitty-core"
-version = "0.1.0"
-dependencies = [
- "oxitty-protocol",
- "portable-pty",
- "thiserror 2.0.21",
- "tokio",
- "tracing",
- "uuid",
-]
-
-[[package]]
-name = "oxitty-protocol"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "tokio",
- "ts-rs",
-]
-
-[[package]]
-name = "oxitty-server"
-version = "0.1.0"
+name = "oxitty"
+version = "0.0.0"
 dependencies = [
  "anyhow",
  "axum",
@@ -753,6 +731,28 @@ dependencies = [
  "tower-http",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "oxitty-core"
+version = "0.0.0"
+dependencies = [
+ "oxitty-protocol",
+ "portable-pty",
+ "thiserror 2.0.21",
+ "tokio",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
+name = "oxitty-protocol"
+version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tokio",
+ "ts-rs",
 ]
 
 [[package]]

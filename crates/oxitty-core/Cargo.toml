@@ -3,9 +3,12 @@ name = "oxitty-core"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description = "Core PTY and session management for oxitty Web TTY daemon"
+repository.workspace = true
+readme = "../../README.md"
 
 [dependencies]
-oxitty-protocol = { path = "../oxitty-protocol" }
+oxitty-protocol.workspace = true
 portable-pty.workspace = true
 tokio.workspace = true
 tracing.workspace = true

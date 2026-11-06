@@ -77,7 +77,7 @@ oxitty/
 │   │   ├── src/lib.rs
 │   │   ├── src/pty.rs      # portable-pty integration & resize handling
 │   │   └── src/session.rs  # Arc/Mutex channel bridge between Tokio & PTY threads
-│   └── oxitty-server/      # Axum HTTP/WS server & CLI application
+│   └── oxitty/             # Axum HTTP/WS server & CLI application
 │       ├── src/main.rs     # Entry point & tracing init
 │       ├── src/cli.rs      # Clap argument definition
 │       ├── src/assets.rs   # rust-embed fallback router

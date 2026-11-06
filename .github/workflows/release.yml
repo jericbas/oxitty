@@ -90,7 +90,7 @@ jobs:
           bun run build:frontend
 
       - name: Build static release binary with cross
-        run: cross build --release --target ${{ matrix.target }} -p oxitty-server
+        run: cross build --release --target ${{ matrix.target }} -p oxitty
 
       - name: Assemble distribution tarball
         run: |
@@ -149,3 +149,41 @@ jobs:
           gh release upload "${{ steps.vars.outputs.tag }}" dist/* --clobber
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  publish-crates:
+    name: Publish to Crates.io
+    needs: [release-please, build]
+    if: ${{ (needs.release-please.outputs.releases_created == 'true' || github.event_name == 'workflow_dispatch') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build frontend distribution
+        run: |
+          bun install
+          bun run build:frontend
+
+      - name: Publish to Crates.io
+        if: ${{ env.CARGO_REGISTRY_TOKEN != '' }}
+        run: |
+          echo "Publishing oxitty-protocol..."
+          cargo publish -p oxitty-protocol --token "$CARGO_REGISTRY_TOKEN" || echo "oxitty-protocol may already be published"
+          sleep 25
+
+          echo "Publishing oxitty-core..."
+          cargo publish -p oxitty-core --token "$CARGO_REGISTRY_TOKEN" || echo "oxitty-core may already be published"
+          sleep 25
+
+          echo "Publishing oxitty..."
+          cargo publish -p oxitty --token "$CARGO_REGISTRY_TOKEN"
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

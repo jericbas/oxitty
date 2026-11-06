@@ -1,12 +1,12 @@
 {
   "name": "oxitty-workspace",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "private": true,
   "license": "MIT OR Apache-2.0",
   "description": "High-performance Web TTY daemon built with Rust, React 19, Bun, Vite & ts-rs",
   "scripts": {
     "dev": "bun --filter oxitty-frontend dev",
-    "build:frontend": "bun --filter oxitty-frontend build",
+    "build:frontend": "bun --filter oxitty-frontend build && mkdir -p crates/oxitty/dist && cp -r frontend/dist/* crates/oxitty/dist/",
     "build:backend": "cargo build --release",
     "build": "bun run build:frontend && bun run build:backend",
     "lint": "biome check .",

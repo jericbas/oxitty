@@ -1,16 +1,24 @@
 [package]
-name = "oxitty-server"
+name = "oxitty"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
+description.workspace = true
+repository.workspace = true
+readme = "../../README.md"
+include = [
+    "src/**/*",
+    "dist/**/*",
+    "Cargo.toml",
+]
 
 [[bin]]
 name = "oxitty"
 path = "src/main.rs"
 
 [dependencies]
-oxitty-protocol = { path = "../oxitty-protocol" }
-oxitty-core = { path = "../oxitty-core" }
+oxitty-protocol.workspace = true
+oxitty-core.workspace = true
 axum.workspace = true
 tokio.workspace = true
 tower.workspace = true

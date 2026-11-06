@@ -64,7 +64,7 @@ jobs:
           bun run build:frontend
 
       - name: Build standalone single binary
-        run: cargo build --release -p oxitty-server
+        run: cargo build --release -p oxitty
 
       - name: Test binary execution
         run: ./target/release/oxitty --help

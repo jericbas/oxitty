@@ -3,17 +3,22 @@ resolver = "2"
 members = [
     "crates/oxitty-protocol",
     "crates/oxitty-core",
-    "crates/oxitty-server",
+    "crates/oxitty",
 ]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.0.0"
 edition = "2021"
 authors = ["Oxitty Contributors"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/jericbas/oxitty"
+homepage = "https://github.com/jericbas/oxitty"
+description = "High-performance Web TTY daemon built with Rust, React 19, Bun, Vite & ts-rs"
+readme = "README.md"
 
 [workspace.dependencies]
+oxitty-protocol = { version = "0.0.0", path = "crates/oxitty-protocol" }
+oxitty-core = { version = "0.0.0", path = "crates/oxitty-core" }
 tokio = { version = "1.43", features = ["full"] }
 tokio-util = { version = "0.7", features = ["codec"] }
 axum = { version = "0.8", features = ["ws"] }
