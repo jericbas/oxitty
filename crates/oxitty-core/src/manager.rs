@@ -16,7 +16,13 @@ impl SessionManager {
     }
 
     pub async fn get_session(&self, id: &str) -> Option<Arc<Session>> {
-        self.sessions.read().await.get(id).cloned()
+        let session = self.sessions.read().await.get(id).cloned()?;
+        if session.is_alive() {
+            Some(session)
+        } else {
+            self.sessions.write().await.remove(id);
+            None
+        }
     }
 
     pub async fn get_or_create_shared(

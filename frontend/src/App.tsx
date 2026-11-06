@@ -1,193 +1,163 @@
-import { useCallback, useState, useTransition } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Header } from './components/Header';
 import { PaneContainer } from './components/PaneContainer';
 import { SettingsModal } from './components/SettingsModal';
 import { StatusBar } from './components/StatusBar';
-import { TabBar } from './components/TabBar';
 import { useShortcuts } from './hooks/useShortcuts';
-import type { TabState } from './types/tabs';
-import type { TerminalPreferences } from './types/theme';
+import type { ConnectionStatus } from './hooks/useWebSocket';
+import { useWorkspace } from './hooks/useWorkspace';
+import { THEME_OPTIONS, type TerminalPreferences, normalizeThemePreset } from './types/theme';
 
-export function App() {
-  const [isPending, startTransition] = useTransition();
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [metrics, setMetrics] = useState<{ cols: number; rows: number; latency: number | null }>({
-    cols: 80,
-    rows: 24,
-    latency: null,
-  });
+const STORAGE_KEY = 'oxitty:preferences';
 
-  const [preferences, setPreferences] = useState<TerminalPreferences>({
+function loadSavedPreferences(): TerminalPreferences {
+  const defaults: TerminalPreferences = {
     fontSize: 14,
     fontFamily: 'JetBrains Mono, Menlo, monospace',
     cursorBlink: true,
-    themeName: 'oneDark',
+    themeName: 'tokyoNight',
+  };
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return defaults;
+    const parsed = JSON.parse(raw) as Partial<TerminalPreferences>;
+    return {
+      fontSize: typeof parsed.fontSize === 'number' ? parsed.fontSize : defaults.fontSize,
+      fontFamily: typeof parsed.fontFamily === 'string' ? parsed.fontFamily : defaults.fontFamily,
+      cursorBlink:
+        typeof parsed.cursorBlink === 'boolean' ? parsed.cursorBlink : defaults.cursorBlink,
+      themeName: normalizeThemePreset(parsed.themeName) ?? defaults.themeName,
+    };
+  } catch {
+    return defaults;
+  }
+}
+
+export function App() {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [reconnectSignal, setReconnectSignal] = useState(0);
+  const [preferences, setPreferences] = useState<TerminalPreferences>(loadSavedPreferences);
+
+  const [metrics, setMetrics] = useState<{
+    cols: number;
+    rows: number;
+    latency: number | null;
+    status: ConnectionStatus;
+    readOnly: boolean;
+  }>({
+    cols: 80,
+    rows: 24,
+    latency: null,
+    status: 'connecting',
+    readOnly: false,
   });
 
-  const [tabs, setTabs] = useState<TabState[]>(() => {
-    const params = new URLSearchParams(window.location.search);
-    const initialSession = params.get('session') || undefined;
-    const isObserver = params.get('observer') === '1' || params.get('observer') === 'true';
-    const initialPaneId = 'pane-1';
-    return [
-      {
-        id: 'tab-1',
-        title: 'Terminal 1',
-        splitDirection: 'none',
-        activePaneId: initialPaneId,
-        panes: [
-          {
-            id: initialPaneId,
-            sessionId: initialSession,
-            title: 'Terminal 1',
-            isReadOnly: isObserver,
-          },
-        ],
-      },
-    ];
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
+    } catch {
+      // Ignore storage quota errors
+    }
+  }, [preferences]);
+
+  const workspace = useWorkspace((cfg) => {
+    const serverTheme = normalizeThemePreset(cfg.theme);
+    setPreferences((prev) => ({
+      fontSize: cfg.font_size || prev.fontSize,
+      fontFamily: cfg.font_family || prev.fontFamily,
+      cursorBlink: cfg.cursor_blink,
+      themeName: serverTheme ?? prev.themeName,
+      customColors: cfg.custom_colors ?? prev.customColors,
+    }));
   });
 
-  const [activeTabId, setActiveTabId] = useState('tab-1');
-  const activeTab = tabs.find((t) => t.id === activeTabId) || tabs[0];
-
-  const handleSelectTab = useCallback((tabId: string) => {
-    startTransition(() => {
-      setActiveTabId(tabId);
+  const handleCycleTheme = useCallback(() => {
+    setPreferences((prev) => {
+      const idx = THEME_OPTIONS.findIndex((t) => t.id === prev.themeName);
+      const next = THEME_OPTIONS[(idx + 1) % THEME_OPTIONS.length];
+      return { ...prev, themeName: next.id };
     });
   }, []);
 
-  const handleNewTab = useCallback(() => {
-    const newId = `tab-${Date.now()}`;
-    const newPaneId = `pane-${Date.now()}`;
-    const newTab: TabState = {
-      id: newId,
-      title: `Terminal ${tabs.length + 1}`,
-      splitDirection: 'none',
-      activePaneId: newPaneId,
-      panes: [{ id: newPaneId, title: `Terminal ${tabs.length + 1}` }],
-    };
-    setTabs((prev) => [...prev, newTab]);
-    startTransition(() => {
-      setActiveTabId(newId);
-    });
-  }, [tabs.length]);
-
-  const handleCloseTab = useCallback(
-    (tabId: string) => {
-      setTabs((prev) => {
-        if (prev.length <= 1) return prev;
-        const nextTabs = prev.filter((t) => t.id !== tabId);
-        if (activeTabId === tabId && nextTabs.length > 0) {
-          setActiveTabId(nextTabs[0].id);
-        }
-        return nextTabs;
-      });
-    },
-    [activeTabId]
-  );
-
-  const handleSplit = useCallback(
-    (direction: 'horizontal' | 'vertical') => {
-      setTabs((prev) =>
-        prev.map((t) => {
-          if (t.id !== activeTabId || t.panes.length >= 2) return t;
-          const newPaneId = `pane-${Date.now()}`;
-          return {
-            ...t,
-            splitDirection: direction,
-            panes: [...t.panes, { id: newPaneId, title: `${t.title} (Split)` }],
-            activePaneId: newPaneId,
-          };
-        })
+  const handleMetricsUpdate = useCallback(
+    (
+      cols: number,
+      rows: number,
+      latency: number | null,
+      status: ConnectionStatus,
+      readOnly: boolean
+    ) => {
+      setMetrics((prev) =>
+        prev.cols === cols &&
+        prev.rows === rows &&
+        prev.latency === latency &&
+        prev.status === status &&
+        prev.readOnly === readOnly
+          ? prev
+          : { cols, rows, latency, status, readOnly }
       );
     },
-    [activeTabId]
+    []
   );
-
-  const handleClosePane = useCallback(
-    (paneId: string) => {
-      setTabs((prev) =>
-        prev.map((t) => {
-          if (t.id !== activeTabId || t.panes.length <= 1) return t;
-          const remaining = t.panes.filter((p) => p.id !== paneId);
-          return {
-            ...t,
-            panes: remaining,
-            splitDirection: 'none',
-            activePaneId: remaining[0].id,
-          };
-        })
-      );
-    },
-    [activeTabId]
-  );
-
-  const handleShareObserver = useCallback(() => {
-    const activePane = activeTab.panes.find((p) => p.id === activeTab.activePaneId);
-    if (!activePane?.sessionId) return;
-    const url = `${window.location.origin}/?session=${activePane.sessionId}&observer=true`;
-    navigator.clipboard.writeText(url).then(() => {
-      alert('Observer share link copied to clipboard!');
-    });
-  }, [activeTab]);
 
   useShortcuts({
-    onNewTab: handleNewTab,
-    onCloseTab: () => handleCloseTab(activeTabId),
-    onSplitHorizontal: () => handleSplit('horizontal'),
-    onSplitVertical: () => handleSplit('vertical'),
+    onNewTab: workspace.handleNewTab,
+    onCloseActive: workspace.handleCloseActive,
+    onSplitHorizontal: () => workspace.handleSplit('horizontal'),
+    onSplitVertical: () => workspace.handleSplit('vertical'),
+    onZoomIn: () => setPreferences((p) => ({ ...p, fontSize: Math.min(24, p.fontSize + 1) })),
+    onZoomOut: () => setPreferences((p) => ({ ...p, fontSize: Math.max(10, p.fontSize - 1) })),
+    onZoomReset: () => setPreferences((p) => ({ ...p, fontSize: 14 })),
   });
 
   return (
     <div className="flex flex-col w-screen h-screen overflow-hidden bg-slate-950">
       <Header
-        title={activeTab.title}
-        status="connected"
+        tabs={workspace.tabs}
+        activeTabId={workspace.activeTab.id}
+        canSplit={workspace.activeTab.panes.length < 2}
+        canShare={Boolean(workspace.activePane?.sessionId)}
+        shareCopied={workspace.shareCopied}
+        status={metrics.status}
+        onSelectTab={workspace.setActiveTabId}
+        onCloseTab={workspace.handleCloseTab}
+        onNewTab={workspace.handleNewTab}
+        onSplit={workspace.handleSplit}
+        onShareObserver={workspace.handleShareObserver}
         onOpenSettings={() => setIsSettingsOpen(true)}
-        onReconnect={() => window.location.reload()}
+        onReconnect={() => setReconnectSignal((n) => n + 1)}
       />
-      <TabBar
-        tabs={tabs}
-        activeTabId={activeTabId}
-        isPending={isPending}
-        onSelectTab={handleSelectTab}
-        onCloseTab={handleCloseTab}
-        onNewTab={handleNewTab}
-        onSplit={handleSplit}
-        onShareObserver={handleShareObserver}
-      />
-      <div className="flex-1 w-full h-full min-h-0 relative">
-        <PaneContainer
-          panes={activeTab.panes}
-          splitDirection={activeTab.splitDirection}
-          activePaneId={activeTab.activePaneId}
-          preferences={preferences}
-          onSelectPane={(paneId) =>
-            setTabs((prev) =>
-              prev.map((t) => (t.id === activeTabId ? { ...t, activePaneId: paneId } : t))
-            )
-          }
-          onClosePane={handleClosePane}
-          onSessionReady={(paneId, sessId, title) =>
-            setTabs((prev) =>
-              prev.map((t) => {
-                if (t.id !== activeTabId) return t;
-                const nextPanes = t.panes.map((p) =>
-                  p.id === paneId ? { ...p, sessionId: sessId, title } : p
-                );
-                return { ...t, panes: nextPanes };
-              })
-            )
-          }
-          onMetricsUpdate={(cols, rows, latency) => setMetrics({ cols, rows, latency })}
-        />
-      </div>
+
+      <main className="flex-1 w-full h-full min-h-0 relative">
+        {workspace.tabs.map((tab) => (
+          <PaneContainer
+            key={tab.id}
+            panes={tab.panes}
+            splitDirection={tab.splitDirection}
+            activePaneId={tab.activePaneId}
+            isVisible={tab.id === workspace.activeTab.id}
+            reconnectSignal={reconnectSignal}
+            preferences={preferences}
+            onSelectPane={(paneId) => workspace.handleSelectPane(tab.id, paneId)}
+            onClosePane={(paneId) => workspace.handleClosePane(tab.id, paneId)}
+            onSessionReady={(paneId, sessId, title, cfg) =>
+              workspace.handleSessionReady(tab.id, paneId, sessId, title, cfg)
+            }
+            onTitleChange={(paneId, title) => workspace.handleTitleChange(tab.id, paneId, title)}
+            onMetricsUpdate={handleMetricsUpdate}
+          />
+        ))}
+      </main>
+
       <StatusBar
         cols={metrics.cols}
         rows={metrics.rows}
         latency={metrics.latency}
-        readOnly={Boolean(activeTab.panes.find((p) => p.id === activeTab.activePaneId)?.isReadOnly)}
+        themeName={preferences.themeName}
+        readOnly={metrics.readOnly}
+        onCycleTheme={handleCycleTheme}
       />
+
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}

@@ -1,4 +1,4 @@
-use portable_pty::{native_pty_system, CommandBuilder, MasterPty, PtyPair, PtySize};
+use portable_pty::{native_pty_system, Child, CommandBuilder, MasterPty, PtyPair, PtySize};
 use std::io::{Read, Write};
 use thiserror::Error;
 
@@ -38,12 +38,18 @@ impl PtyWriter {
     }
 }
 
+pub type SpawnedPty = (
+    PtyWriter,
+    Box<dyn Read + Send>,
+    Box<dyn Child + Send + Sync>,
+);
+
 pub fn spawn_pty(
     command: &str,
     args: &[String],
     cols: u16,
     rows: u16,
-) -> Result<(PtyWriter, Box<dyn Read + Send>), PtyError> {
+) -> Result<SpawnedPty, PtyError> {
     let pty_system = native_pty_system();
     let size = PtySize {
         rows,
@@ -60,11 +66,14 @@ pub fn spawn_pty(
     for arg in args {
         cmd.arg(arg);
     }
+    if let Ok(cwd) = std::env::current_dir() {
+        cmd.cwd(cwd);
+    }
 
     cmd.env("TERM", "xterm-256color");
     cmd.env("COLORTERM", "truecolor");
 
-    let _child = slave
+    let child = slave
         .spawn_command(cmd)
         .map_err(|e| PtyError::Spawn(e.to_string()))?;
 
@@ -77,5 +86,5 @@ pub fn spawn_pty(
         .take_writer()
         .map_err(|e| PtyError::System(e.to_string()))?;
 
-    Ok((PtyWriter { master, writer }, reader))
+    Ok((PtyWriter { master, writer }, reader, child))
 }

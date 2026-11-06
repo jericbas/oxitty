@@ -88,7 +88,7 @@ async fn handle_socket(socket: WebSocket, query: WsQuery, state: AppState) {
     let is_observer =
         query.observer.unwrap_or(false) || query.readonly.unwrap_or(false) || state.cli.readonly;
     let client_id = Uuid::new_v4().to_string();
-    let (mut pty_rx, replay_buf) = session.subscribe();
+    let (mut pty_rx, mut exit_rx, replay_buf) = session.subscribe();
 
     let init_msg = ServerMessage::Init(Box::new(ClientConfig {
         session_id: session.id.clone(),
@@ -102,7 +102,7 @@ async fn handle_socket(socket: WebSocket, query: WsQuery, state: AppState) {
             .unwrap_or_else(|| "JetBrains Mono, Menlo, monospace".to_string()),
         font_size: state.config.terminal.font_size.unwrap_or(14),
         cursor_blink: state.config.terminal.cursor_blink.unwrap_or(true),
-        theme: state.config.theme.preset.clone(),
+        theme: state.cli.theme.clone(),
         custom_colors: state.config.theme.colors.clone(),
         keybindings: Some(state.config.keybindings.clone()),
     }));
@@ -120,16 +120,38 @@ async fn handle_socket(socket: WebSocket, query: WsQuery, state: AppState) {
 
     loop {
         tokio::select! {
-            Ok(output_bytes) = pty_rx.recv() => {
-                let text = String::from_utf8_lossy(&output_bytes).to_string();
-                let msg = ServerMessage::Output(text);
-                if let Ok(json) = serde_json::to_string(&msg) {
-                    if ws_sender.send(Message::Text(json.into())).await.is_err() {
-                        break;
+            recv_res = pty_rx.recv() => {
+                match recv_res {
+                    Ok(output_bytes) => {
+                        let text = String::from_utf8_lossy(&output_bytes).to_string();
+                        let msg = ServerMessage::Output(text);
+                        if let Ok(json) = serde_json::to_string(&msg) {
+                            if ws_sender.send(Message::Text(json.into())).await.is_err() {
+                                break;
+                            }
+                        }
                     }
+                    Err(tokio::sync::broadcast::error::RecvError::Lagged(_)) => continue,
+                    Err(tokio::sync::broadcast::error::RecvError::Closed) => break,
                 }
             }
-            Some(Ok(ws_msg)) = ws_receiver.next() => {
+            Ok(()) = exit_rx.changed() => {
+                while let Ok(output_bytes) = pty_rx.try_recv() {
+                    let msg = ServerMessage::Output(String::from_utf8_lossy(&output_bytes).to_string());
+                    if let Ok(json) = serde_json::to_string(&msg) {
+                        let _ = ws_sender.send(Message::Text(json.into())).await;
+                    }
+                }
+                let exit_code = (*exit_rx.borrow()).flatten();
+                let exited = ServerMessage::ProcessExited(exit_code);
+                if let Ok(json) = serde_json::to_string(&exited) {
+                    let _ = ws_sender.send(Message::Text(json.into())).await;
+                }
+                state.sessions.remove_session(&session.id).await;
+                break;
+            }
+            ws_item = ws_receiver.next() => {
+                let Some(Ok(ws_msg)) = ws_item else { break };
                 match ws_msg {
                     Message::Text(payload) => {
                         if let Ok(client_msg) = serde_json::from_str::<ClientMessage>(&payload) {
@@ -154,7 +176,6 @@ async fn handle_socket(socket: WebSocket, query: WsQuery, state: AppState) {
                     _ => {}
                 }
             }
-            else => break,
         }
     }
 

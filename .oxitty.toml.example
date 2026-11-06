@@ -18,8 +18,10 @@ font_size = 14
 cursor_blink = true
 
 [theme]
-# Supported presets: oneDark, dracula, nord, catppuccin
-preset = "oneDark"
+# Supported presets:
+# tokyo-night, catppuccin, catppuccin-latte, one-dark, dracula, gruvbox,
+# nord, rose-pine, kanagawa, everforest, ayu-dark, solarized-dark, github-dark, monokai
+preset = "tokyo-night"
 
 [theme.colors]
 # Custom ANSI 16-color & truecolor palette override
