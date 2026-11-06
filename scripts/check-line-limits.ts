@@ -81,8 +81,20 @@ function collectFiles(dir: string, fileList: string[] = []): string[] {
 }
 
 function run(): void {
-  console.log('🔍 Checking 200-Line Code Limit (ignoring blank lines and comments)...');
-  const allFiles = SCAN_DIRS.flatMap((dir) => collectFiles(dir));
+  const cliArgs = process.argv.slice(2).filter((f) => !f.startsWith('-'));
+  const allFiles =
+    cliArgs.length > 0
+      ? cliArgs.filter((f) => ['.rs', '.ts', '.tsx'].includes(extname(f)) && !isIgnored(f))
+      : SCAN_DIRS.flatMap((dir) => collectFiles(dir));
+
+  if (allFiles.length === 0) {
+    console.log('🔍 No eligible source files to check for line limits.');
+    return;
+  }
+
+  console.log(
+    `🔍 Checking 200-Line Code Limit on ${allFiles.length} file(s) (ignoring blank lines and comments)...`
+  );
 
   let failures = 0;
   for (const file of allFiles) {
