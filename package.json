@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT OR Apache-2.0",
-  "description": "High-performance Web TTY daemon built with Rust, React 19, Bun, Vite & ts-rs",
+  "description": "High-performance Web TTY daemon built with Rust, React 19, Bun, Vite & tsrs",
   "scripts": {
     "dev": "bun --filter oxitty-frontend dev",
+    "typecheck": "bun --filter oxitty-frontend typecheck",
     "build:frontend": "bun --filter oxitty-frontend build && mkdir -p crates/oxitty/dist && cp -r frontend/dist/* crates/oxitty/dist/",
     "build:backend": "cargo build --release",
     "build": "bun run build:frontend && bun run build:backend",

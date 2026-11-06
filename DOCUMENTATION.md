@@ -28,7 +28,7 @@
 ## Architecture & Design
 
 - **PTY Process Orchestration**: `portable-pty` interacts directly with OS pseudo-terminals, bridging child process STDIN/STDOUT via Tokio asynchronous task loops.
-- **WebSocket Framing**: Bidirectional JSON messages (`ClientMessage` and `ServerMessage`) synchronized across frontend and backend using `ts-rs`.
+- **WebSocket Framing & TypeScript**: Bidirectional JSON messages (`ClientMessage` and `ServerMessage`) synchronized across frontend and backend, with blazing fast typechecking powered by [`tsrs`](https://github.com/oxc-project/tsrs).
 - **Embedded Frontend**: Built with Vite and Bun, the React 19 UI is embedded directly into the final standalone Rust executable via `rust-embed`.
 - **200-Line Axiom**: Strict adherence to <= 200 Source Lines of Code per file ensures high maintainability and modular decoupling.
 

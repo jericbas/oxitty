@@ -12,7 +12,7 @@ Oxitty re-engineers terminal web-sharing from first principles using modern syst
 | **Memory Safety** | Manual pointer/buffer handling | Guaranteed by Rust borrow checker |
 | **PTY Abstraction** | Platform-specific C calls / OpenPTY / ConPTY | `portable-pty` (Cross-platform Linux, macOS, Windows) |
 | **Frontend Framework** | Vanilla TypeScript + Webpack | React 19 + TypeScript + Bun + Vite |
-| **Type Synchronization** | Manual ad-hoc opcode matching (`'0'`, `'1'`, etc.) | `ts-rs` End-to-end typed contract directly generated from Rust AST |
+| **Type Synchronization** | Manual ad-hoc opcode matching (`'0'`, `'1'`, etc.) | Typed wire schemas verified and type-checked via [`tsrs`](https://github.com/oxc-project/tsrs) |
 | **Renderer Engine** | DOM / Canvas xterm.js | Hardware-accelerated WebGL with Canvas fallback |
 | **Styling & Theme Engine**| Static CSS | Modern UI with Tailwind CSS v4 + instant theme hot-swapping |
 | **Code Modularity** | Monolithic C files | Strict **<= 200 SLOC** per file enforced via Biome & Bun script |

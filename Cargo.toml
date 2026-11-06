@@ -13,7 +13,7 @@ authors = ["Oxitty Contributors"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/jericbas/oxitty"
 homepage = "https://github.com/jericbas/oxitty"
-description = "High-performance Web TTY daemon built with Rust, React 19, Bun, Vite & ts-rs"
+description = "High-performance Web TTY daemon built with Rust, React 19, Bun, Vite & tsrs"
 readme = "README.md"
 
 [workspace.dependencies]

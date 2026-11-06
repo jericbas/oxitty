@@ -1,7 +1,7 @@
 # 🐱🦀 Oxitty (`oxitty`)
 
 > **Next-Generation Web Terminal Daemon**  
-> Reimagining [`ttyd`](https://github.com/tsl0922/ttyd) with **Rust**, **React 19**, **Bun**, **Vite**, and **`ts-rs`**.
+> Reimagining [`ttyd`](https://github.com/tsl0922/ttyd) with **Rust**, **React 19**, **Bun**, **Vite**, and **[`tsrs`](https://github.com/oxc-project/tsrs)**.
 
 [![Crates.io](https://img.shields.io/crates/v/oxitty.svg)](https://crates.io/crates/oxitty)
 [![Rust](https://img.shields.io/badge/Rust-1.80%2B-orange.svg)](https://www.rust-lang.org/)
@@ -51,7 +51,7 @@ docker run -it --rm -p 7681:7681 ghcr.io/jericbas/oxitty:latest
 
 - **🚀 Memory-Safe & Async**: Built with Axum, Tokio, and `portable-pty`.
 - **🔒 Security Built-In**: Native HTTP Basic Auth (`-u user:pass`) and in-process TLS/SSL (`--ssl-cert`, `--ssl-key`).
-- **⚛️ Modern React 19 UI**: Zero-drift type sharing (`ts-rs`) and hardware-accelerated WebGL terminal (`@xterm/xterm`).
+- **⚛️ Modern React 19 UI**: Built with React 19, [`tsrs`](https://github.com/oxc-project/tsrs), and hardware-accelerated WebGL terminal (`@xterm/xterm`).
 - **📦 Single Standalone Binary**: Frontend assets embedded directly via `rust-embed`.
 - **📏 Strict 200-Line Axiom**: Every file is guaranteed <= 200 SLOC.
 
