@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "typecheck": "tsrs --noEmit",
+    "build": "tsrs --noEmit && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -25,6 +26,7 @@
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
     "tailwindcss": "^4.3.4",
+    "tsrs": "^0.22.0-ts7.1.0-beta",
     "typescript": "^5.7.3",
     "vite": "^6.1.0"
   }
