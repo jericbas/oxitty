@@ -32,13 +32,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
 
+      - name: Install and build frontend
+        run: |
+          bun install
+          bun run build:frontend
+
       - name: Check Rust formatting
         run: cargo fmt --all -- --check
+
+      - name: Run clippy
+        run: cargo clippy --all-targets -- -D warnings
 
       - name: Run tests & verify ts-rs bindings
         run: cargo test --workspace

@@ -9,7 +9,7 @@ bun.lockb
 bun.lock
 .env
 .env.local
-dist/
+/dist/
 build/
 
 # Vite / IDE
