@@ -1,0 +1,15 @@
+[Unit]
+Description=Oxitty Web TTY Daemon
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/oxitty --interface 127.0.0.1 --port 7681
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

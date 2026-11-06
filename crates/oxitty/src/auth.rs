@@ -61,18 +61,14 @@ mod tests {
 
     fn test_app(credential: Option<String>) -> Router {
         let cli = CliArgs {
-            port: 7681,
-            interface: "127.0.0.1".parse().unwrap(),
-            command: None,
-            args: vec![],
-            title: "Test".to_string(),
-            readonly: false,
-            shared: false,
             credential,
-            ssl_cert: None,
-            ssl_key: None,
+            ..Default::default()
         };
-        let state = AppState { cli: Arc::new(cli) };
+        let state = AppState {
+            cli: Arc::new(cli),
+            config: Arc::new(crate::config::OxittyConfig::default()),
+            sessions: oxitty_core::SessionManager::new(),
+        };
         Router::new()
             .route("/test", get(|| async { "OK" }))
             .layer(axum::middleware::from_fn_with_state(

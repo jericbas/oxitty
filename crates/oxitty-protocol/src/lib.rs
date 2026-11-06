@@ -1,3 +1,6 @@
+pub mod config;
+pub use config::*;
+
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
@@ -19,6 +22,12 @@ pub struct ClientConfig {
     pub font_family: String,
     pub font_size: u16,
     pub cursor_blink: bool,
+    #[ts(optional)]
+    pub theme: Option<String>,
+    #[ts(optional)]
+    pub custom_colors: Option<CustomColors>,
+    #[ts(optional)]
+    pub keybindings: Option<KeybindingsConfig>,
 }
 
 /// Messages sent from the browser client to the Rust server.
@@ -44,7 +53,7 @@ pub enum ClientMessage {
 #[ts(export, export_to = "../../../frontend/src/types/generated/")]
 pub enum ServerMessage {
     /// Initial session handshake and terminal configuration.
-    Init(ClientConfig),
+    Init(Box<ClientConfig>),
     /// Raw terminal output bytes encoded as UTF-8 string.
     Output(String),
     /// Set window title update.
@@ -67,6 +76,8 @@ mod tests {
         ClientConfig::export().expect("failed to export ClientConfig");
         ClientMessage::export().expect("failed to export ClientMessage");
         ServerMessage::export().expect("failed to export ServerMessage");
+        CustomColors::export().expect("failed to export CustomColors");
+        KeybindingsConfig::export().expect("failed to export KeybindingsConfig");
     }
 
     #[test]

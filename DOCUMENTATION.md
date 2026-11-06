@@ -9,12 +9,15 @@
 - [About Oxitty](#about-oxitty)
 - [Architecture & Design](#architecture--design)
 - [Complete CLI Reference](#complete-cli-reference)
+- [Configuration File (.oxitty.toml)](#configuration-file-oxittytoml)
+- [Session Sharing & Observer Mode](#session-sharing--observer-mode)
+- [Multi-Tab & Split-Pane Workspace](#multi-tab--split-pane-workspace)
 - [Authentication & TLS Security](#authentication--tls-security)
 - [Deployment Modes](#deployment-modes)
   - [Standalone Binary](#standalone-binary)
+  - [Debian Package & Systemd](#debian-package--systemd)
   - [Docker & Containerized](#docker--containerized)
   - [Development with Hot Reloading](#development-with-hot-reloading)
-- [Quality Assurance & Verification](#quality-assurance--verification)
 - [License](#license)
 
 ---
@@ -32,8 +35,6 @@
 - **Embedded Frontend**: Built with Vite and Bun, the React 19 UI is embedded directly into the final standalone Rust executable via `rust-embed`.
 - **200-Line Axiom**: Strict adherence to <= 200 Source Lines of Code per file ensures high maintainability and modular decoupling.
 
-For deeper protocol details, see [ARCHITECTURE.md](ARCHITECTURE.md).
-
 ---
 
 ## Complete CLI Reference
@@ -45,6 +46,7 @@ Arguments:
   [ARGS]...  Command arguments to pass to the spawned process
 
 Options:
+      --config <PATH>          Path to TOML configuration file
   -p, --port <PORT>            Port to listen on [default: 7681]
   -i, --interface <INTERFACE>  Interface to bind to [default: 0.0.0.0]
   -c, --command <COMMAND>      Command to spawn (defaults to user's $SHELL)
@@ -58,24 +60,74 @@ Options:
   -V, --version                Print version
 ```
 
-### Examples
+---
 
-```bash
-# 1. Custom port and shell
-oxitty -p 8080 -c /bin/bash
+## Configuration File (.oxitty.toml)
 
-# 2. Spawn a command with arguments
-oxitty -t "Server Logs" -- journalctl -f -u nginx
+Oxitty automatically searches for a configuration file in the following order:
+1. File passed via `--config <path>`
+2. `./.oxitty.toml` in the current working directory
+3. `~/.config/oxitty/oxitty.toml`
+4. `/etc/oxitty/oxitty.toml`
 
-# 3. Read-only system dashboard
-oxitty -c htop -R
+CLI flags automatically override configuration file values if both are supplied.
 
-# 4. Password-protected terminal
-oxitty -u admin:secretpassword123
+```toml
+[server]
+port = 7681
+interface = "0.0.0.0"
+title = "Oxitty Terminal"
+command = "/bin/bash"
+args = ["--login"]
+readonly = false
+shared = false
+# credential = "admin:secretpassword"
+# ssl_cert = "/etc/ssl/certs/oxitty.crt"
+# ssl_key = "/etc/ssl/private/oxitty.key"
 
-# 5. HTTPS/WSS with native TLS
-oxitty --ssl-cert /etc/ssl/certs/cert.pem --ssl-key /etc/ssl/private/key.pem
+[terminal]
+font_family = "JetBrains Mono, Menlo, monospace"
+font_size = 14
+cursor_blink = true
+
+[theme]
+# Theme presets: oneDark, dracula, nord, catppuccin
+preset = "oneDark"
+
+[theme.colors]
+# Custom ANSI 16-color & truecolor palette override
+background = "#1e1e2e"
+foreground = "#cdd6f4"
+cursor = "#f5e0dc"
+
+[keybindings]
+copy = "ctrl+shift+c"
+paste = "ctrl+shift+v"
+clear = "ctrl+l"
+font_increase = "ctrl+="
+font_decrease = "ctrl+-"
+font_reset = "ctrl+0"
 ```
+
+---
+
+## Session Sharing & Observer Mode
+
+Oxitty provides collaborative terminal streaming:
+- **Shared Sessions (`-s, --shared`)**: When launched in shared mode, multiple web clients attach to the same live PTY session broadcast channel.
+- **Read-Only Observer Mode**: Click the **Copy Share Link** button in the tab bar or append `?session=<id>&observer=true` to the URL. Observers can view all terminal activity with zero input privileges.
+- **PTY Buffer Replay**: When a new client or observer connects to an active session, Oxitty replays the recent terminal ring buffer so the client immediately views the current screen contents and prompt.
+- **Dynamic Resize Negotiation**: Lowest common denominator resizing automatically ensures screen output fits across all active connected viewers.
+
+---
+
+## Multi-Tab & Split-Pane Workspace
+
+Oxitty features a modern multi-tab, split-pane workspace powered by React 19 concurrent transitions:
+- `Ctrl+Shift+T`: Open a new independent terminal tab.
+- `Ctrl+Shift+W`: Close the active tab or pane.
+- `Ctrl+Shift+H`: Split the current tab horizontally.
+- `Ctrl+Shift+V`: Split the current tab vertically.
 
 ---
 
@@ -83,59 +135,37 @@ oxitty --ssl-cert /etc/ssl/certs/cert.pem --ssl-key /etc/ssl/private/key.pem
 
 ### Basic HTTP Authentication
 Pass `-u` or `--credential <username:password>` (or set `OXITTY_CREDENTIAL`).
-When enabled:
-- Unauthorized HTTP requests receive `401 Unauthorized` with `WWW-Authenticate: Basic realm="oxitty"`.
-- WebSocket connection attempts without valid credentials are immediately rejected with `401 Unauthorized`.
-- Structured audit logs trace both successful and failed access attempts.
+- Unauthorized requests receive `401 Unauthorized` with `WWW-Authenticate: Basic realm="oxitty"`.
+- WebSocket handshake validates credentials prior to PTY subscription.
 
 ### Native TLS / SSL Termination
-Pass `--ssl-cert` and `--ssl-key` pointing to valid PEM-encoded certificate and private key files.
-Oxitty uses `rustls` to handle TLS termination in-process without requiring Nginx or Caddy.
+Pass `--ssl-cert` and `--ssl-key` pointing to valid PEM-encoded certificate and private key files for direct HTTPS/WSS encryption.
 
 ---
 
 ## Deployment Modes
 
 ### Standalone Binary
-
 ```bash
-# Build frontend and Rust binary
-bun install && bun run build
+cargo build --release -p oxitty
 ./target/release/oxitty --port 7681
 ```
 
+### Debian Package & Systemd
+Install `.deb` packages directly:
+```bash
+sudo dpkg -i oxitty_*.deb
+sudo systemctl enable --now oxitty
+sudo journalctl -u oxitty -f
+```
+
 ### Docker & Containerized
-
 ```bash
-docker compose up -d
-# Or directly:
-docker build -t oxitty .
-docker run -it --rm -p 7681:7681 oxitty
+docker run -it --rm -p 7681:7681 ghcr.io/jericbas/oxitty:latest
 ```
-
-### Development with Hot Reloading
-
-```bash
-# Terminal 1: Rust backend daemon
-cargo run -p oxitty -- --port 7681
-
-# Terminal 2: Vite dev server with React 19 HMR
-bun run dev
-```
-
-Visit `http://localhost:3000`.
 
 ---
 
-## Quality Assurance & Verification
+## License
 
-```bash
-# Regenerate TypeScript bindings
-bun run gen:types
-
-# Biome linter & code limit checks
-bun run check
-
-# Rust tests
-cargo test --workspace
-```
+Dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE).

@@ -1,0 +1,44 @@
+# Oxitty Configuration File (.oxitty.toml)
+
+[server]
+port = 7681
+interface = "0.0.0.0"
+title = "Oxitty Terminal"
+command = "/bin/bash"
+args = ["--login"]
+readonly = false
+shared = false
+# credential = "admin:secret"
+# ssl_cert = "/etc/ssl/certs/oxitty.crt"
+# ssl_key = "/etc/ssl/private/oxitty.key"
+
+[terminal]
+font_family = "JetBrains Mono, Menlo, monospace"
+font_size = 14
+cursor_blink = true
+
+[theme]
+# Supported presets: oneDark, dracula, nord, catppuccin
+preset = "oneDark"
+
+[theme.colors]
+# Custom ANSI 16-color & truecolor palette override
+# background = "#1e1e2e"
+# foreground = "#cdd6f4"
+# cursor = "#f5e0dc"
+# black = "#45475a"
+# red = "#f38ba8"
+# green = "#a6e3a1"
+# yellow = "#f9e2af"
+# blue = "#89b4fa"
+# magenta = "#f5c2e7"
+# cyan = "#94e2d5"
+# white = "#bac2de"
+
+[keybindings]
+copy = "ctrl+shift+c"
+paste = "ctrl+shift+v"
+clear = "ctrl+l"
+font_increase = "ctrl+="
+font_decrease = "ctrl+-"
+font_reset = "ctrl+0"

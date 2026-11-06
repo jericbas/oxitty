@@ -81,3 +81,6 @@ jobs:
 
       - name: Test binary execution
         run: ./target/release/oxitty --help
+
+      - name: Test debian packaging
+        run: ./scripts/package-deb.sh target/release/oxitty 0.0.0 x86_64 dist

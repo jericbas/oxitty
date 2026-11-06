@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT OR Apache-2.0",
+  "author": "Jeric Bas <jeric.codes@proton.me>",
   "description": "High-performance Web TTY daemon built with Rust, React 19, Bun, Vite & tsrs",
   "scripts": {
     "dev": "bun --filter oxitty-frontend dev",
@@ -20,7 +21,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "typescript": "^5.7.3"
+    "tsrs": "^0.22.0-ts7.1.0-beta"
   },
   "workspaces": ["frontend"]
 }

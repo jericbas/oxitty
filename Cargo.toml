@@ -9,7 +9,7 @@ members = [
 [workspace.package]
 version = "0.0.0"
 edition = "2021"
-authors = ["Oxitty Contributors"]
+authors = ["Jeric Bas <jeric.codes@proton.me>"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/jericbas/oxitty"
 homepage = "https://github.com/jericbas/oxitty"
@@ -38,4 +38,5 @@ mime_guess = "2.0"
 futures = "0.3"
 thiserror = "2.0"
 anyhow = "1.0"
+toml = "0.8"
 uuid = { version = "1.11", features = ["v4", "serde"] }

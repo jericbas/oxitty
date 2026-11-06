@@ -101,6 +101,10 @@ jobs:
           cp "target/${{ matrix.target }}/release/oxitty" LICENSE-MIT LICENSE-APACHE README.md "${TAR_DIR}/"
           tar -czvf "dist/oxitty-${VERSION}-${ARCH}.tar.gz" "${TAR_DIR}"
 
+      - name: Build Debian package
+        run: |
+          ./scripts/package-deb.sh "target/${{ matrix.target }}/release/oxitty" "${{ steps.vars.outputs.version }}" "${{ matrix.arch }}" dist
+
       - name: Upload dist artifacts
         uses: actions/upload-artifact@v4
         with:
